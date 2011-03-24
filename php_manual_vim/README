@@ -1,0 +1,34 @@
+PHP Manual for vim
+------------------
+parser.php generates vim docs from the php manual. 
+It's a modiied version of a script found here: 
+http://blog.planetxml.de/archives/16-PHP-Manual-in-VIM-einbinden.html
+
+The documentation in vimdoc was generated on Mar 22, 2011.             
+
+To generate fresh documentation
+-------------------------------
+svn co http://svn.php.net/repository/phpdoc/modules/doc-en phpdoc
+find . -name "reference" -print > references.txt
+find . -name "*.ent" -print > ent.txt
+mkdir out
+
+setup.sh will do the above in one fell swoop.
+
+php parser.php
+
+To install documentation
+------------------------
+cp <out|vimdoc>/*.txt ~/.vim/doc
+
+To regenrate the tags file (the index :help uses):                 
+Open vim and type: :helptags ~/.vim/doc
+
+Add the following to .vimrc
+filetype plugin on
+au FileType php set keywordprg=:help
+
+To use 
+------
+In normal mode, hit K when your cursor is on a function you want to look up.
+
