@@ -11,7 +11,7 @@ set ruler
 set number
 set formatoptions=cro
 
-cnoremap noai <CR>:call ToggleAuto()
+cnoremap noai <CR>:call ToggleAuto()<CR>
 
 func! LoadPhp()
     set omnifunc=phpcomplete#CompletePHP
@@ -27,24 +27,32 @@ func! LoadPhp()
 
     set keywordprg=:help
     set comments=s1:/*,mb:*,ex:*/,://,:#
+    set makeprg=/usr/bin/php\ -e\ %
+    cnoremap php <ESC>:w<CR>:make<CR>
 endf
 
 func! ToggleAuto()
-    if !exists("g:auto_is_off") || g:auto_is_off == 0
-        let auto_is_off = 1
+    if g:auto_is_off == 0
+        let g:auto_is_off = 1
         set noai nocindent
         set formatoptions=
+        echo "Auto indent is off."
     el
         let g:auto_is_off = 0
         set formatoptions=croa
         set ai cindent
+        echo "Auto indent is on."
     endif
 endf
 
 if !exists("autocommands_loaded")
     let autocommands_loaded = 1
+    let g:auto_is_off = 0
     au FileType php call LoadPhp()
 endif
 
+" ctrl P    - autocomplete
 " ctrl C    - insert php doc for current class, method, function, etc
 " F5        - check syntax
+" :php      - do compile current file 
+" :noai     - toggle auto indent
