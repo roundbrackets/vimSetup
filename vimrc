@@ -10,40 +10,73 @@ set history=2000
 set ruler
 set number
 set formatoptions=cro
+set hlsearch
+set ruler
+set undolevels=5000 
+set autowrite
 
-cnoremap noai <CR>:call ToggleAuto()<CR>
+nnoremap P <ESC>P P'[v']=
+nnoremap p <ESC>p p'[v']=
 
-func! LoadPhp()
-    set omnifunc=phpcomplete#CompletePHP
+inoremap <TAB> <C-R>=MyTabComplete()<CR>
 
-    let g:php_sql_query=1                                                                                        
-    let g:php_htmlInStrings=1
+command Noai call ToggleAuto()
 
-    source ~/.vim/plugin/php-doc.vim
+if !exists("LoadPhp_loaded")
+    let LoadPhp_loaded = 1
+    func! LoadPhp()
+        set omnifunc=phpcomplete#CompletePHP
 
-    inoremap <C-C> <ESC>:call PhpDocSingle()<CR>i 
-    nnoremap <C-C> :call PhpDocSingle()<CR> 
-    vnoremap <C-C> :call PhpDocRange()<CR> 
+        let g:php_sql_query=1                                                                                        
+        let g:php_htmlInStrings=1
 
-    set keywordprg=:help
-    set comments=s1:/*,mb:*,ex:*/,://,:#
-    set makeprg=/usr/bin/php\ -e\ %
-    cnoremap php <ESC>:w<CR>:make<CR>
-endf
+        inoremap <C-C> <ESC>:call PhpDocSingle()<CR>i 
+        nnoremap <C-C> :call PhpDocSingle()<CR> 
+        vnoremap <C-C> :call PhpDocRange()<CR> 
 
-func! ToggleAuto()
-    if g:auto_is_off == 0
-        let g:auto_is_off = 1
-        set noai nocindent
-        set formatoptions=
-        echo "Auto indent is off."
-    el
-        let g:auto_is_off = 0
-        set formatoptions=croa
-        set ai cindent
-        echo "Auto indent is on."
-    endif
-endf
+        set keywordprg=:help
+        set comments=s1:/*,mb:*,ex:*/,://,:#
+        set makeprg=/usr/bin/php\ -e\ %
+        command Php call RunPhp()
+    endf
+endif
+
+if !exists("RunPhp_loaded")
+    let RunPhp_loaded = 1
+    func! RunPhp()
+        w
+        make
+    endf
+endif
+
+if !exists("ToggleAuto_loaded")
+    let ToggleAuto_loaded = 1
+    func! ToggleAuto()
+        if g:auto_is_off == 0
+            let g:auto_is_off = 1
+            set noai nocindent
+            set formatoptions=
+            echo "Auto indent is off."
+        el
+            let g:auto_is_off = 0
+            set formatoptions=croa
+            set ai cindent
+            echo "Auto indent is on."
+        endif
+    endf
+endif
+
+if !exists("MyTabComplete_loaded")
+    let MyTabComplete_loaded = 1
+    func! MyTabComplete()
+        let col = col('.')-1
+        if !col || getline('.')[col-1] !~ '\k'
+            return "\<tab>"
+        else
+            return "\<C-N>"
+        endif
+    endf
+endif
 
 if !exists("autocommands_loaded")
     let autocommands_loaded = 1
@@ -51,8 +84,9 @@ if !exists("autocommands_loaded")
     au FileType php call LoadPhp()
 endif
 
-" ctrl P    - autocomplete
 " ctrl C    - insert php doc for current class, method, function, etc
 " F5        - check syntax
-" :php      - do compile current file 
+" :php      - compile current file 
 " :noai     - toggle auto indent
+" :noh      - turn off search highlight
+" <Tab>     - in insert mode to complete the current word
