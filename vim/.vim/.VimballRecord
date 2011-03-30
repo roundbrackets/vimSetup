@@ -1,0 +1,2 @@
+checksyntax.vba: call delete('/home/tina/.vim/doc/checksyntax.txt')|call delete('/home/tina/.vim/plugin/checksyntax.vim')|call delete('/home/tina/.vim/autoload/checksyntax.vim')
+sessions-1.0.0.vba: call delete('/home/tina/.vim/plugin/sessions.vim')
