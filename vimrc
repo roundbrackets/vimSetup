@@ -35,18 +35,35 @@ func! LoadPhp()
     let g:php_sql_query = 1                                                                                        
     let g:php_htmlInStrings = 1
 
-    inoremap <C-C> <ESC>:call PhpDocSingle()<CR>i 
-    nnoremap <C-C> :call PhpDocSingle()<CR> 
-    vnoremap <C-C> :call PhpDocRange()<CR> 
+    inoremap <C-D> <ESC>:call PhpDocSingle()<CR>i 
+    nnoremap <C-D> :call PhpDocSingle()<CR> 
+    vnoremap <C-D> :call PhpDocRange()<CR> 
 
     inoremap <C-L> <ESC>:call RunPhp()<CR>i 
     nnoremap <C-L> :call RunPhp()<CR> 
     vnoremap <C-L> :call RunPhp()<CR> 
+
+    inoremap <C-T> <ESC>:call RunPhpUnit()<CR>i
+    nnoremap <C-T> :call RunPhpUnit()<CR>
+    vnoremap <C-T> :call RunPhpUnit()<CR>
+endf
+
+func! GoThere()
 endf
 
 func! RunPhp()
     w
     make
+endf
+
+func! RunPhpUnit()
+    if strridx(@%, "Test.") != -1
+        tabd w
+        tabnext
+        !phpunit % 
+    el
+        call RunPhp()
+    endif
 endf
 
 func! ToggleAuto()
@@ -60,6 +77,12 @@ func! ToggleAuto()
         set formatoptions=croa
         set ai cindent
         echo "Auto indent is on."
+    endif
+endf
+
+func! OpenFold()
+    if foldclosed(line('.')) != -1
+        normal zo
     endif
 endf
 
@@ -79,12 +102,13 @@ if !exists("autocommands_loaded")
 
     nnoremap P <ESC>P'[v']=
     nnoremap p <ESC>p'[v']=
+    nnoremap G G :call OpenFold()<CR>
 
     inoremap <TAB> <C-R>=MyTabComplete()<CR>
 
-    inoremap <C-T> <ESC>gt 
-    nnoremap <C-T> gt
-    vnoremap <C-T> <ESC>gt 
+    inoremap <C-N> <ESC>gt 
+    nnoremap <C-N> gt
+    vnoremap <C-N> <ESC>gt 
 
     command Noai call ToggleAuto()
 
@@ -95,7 +119,10 @@ if !exists("autocommands_loaded")
     au BufNew,BufReadPre * filetype detect 
 endif
 
-" ctrl C    - insert php doc for current class, method, function, etc
+" ctrl D    - insert php doc for current class, method, function, etc
+" ctrl N    - next tab 
+" ctrl T    - phpunit test 
+" ctrl L    - php lint 
 " F5        - check syntax
 " :php      - compile current file 
 " :noai     - toggle auto indent
