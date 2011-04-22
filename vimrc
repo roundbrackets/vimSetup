@@ -110,6 +110,10 @@ if !exists("autocommands_loaded")
     nnoremap <C-N> gt
     vnoremap <C-N> <ESC>gt 
 
+    noremap ;; :%s:::g<Left><Left><Left>
+    noremap ;' :%s:::cg<Left><Left><Left><Left>
+    cmap ;\ \(\)<Left><Left>
+
     command Noai call ToggleAuto()
 
     au FileType php call LoadPhp()
